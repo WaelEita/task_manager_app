@@ -1,9 +1,11 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'token_manager.dart';
 
 class ApiHelper {
-  static Future<http.Response> postRequest(
+  static final Dio _dio = Dio();
+
+  static Future<Response> postRequest(
       String url, Map<String, dynamic> body,
       [String? token]) async {
     final headers = {'Content-Type': 'application/json'};
@@ -11,52 +13,68 @@ class ApiHelper {
       headers['Authorization'] = 'Bearer $token';
     }
 
-    return await http.post(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    try {
+      return await _dio.post(
+        url,
+        options: Options(headers: headers),
+        data: jsonEncode(body),
+      );
+    } catch (e) {
+      throw Exception('Failed to perform POST request: $e');
+    }
   }
 
-  static Future<http.Response> getRequest(String url) async {
+  static Future<Response> getRequest(String url) async {
     final token = await TokenManager.getToken();
     final headers = {'Authorization': 'Bearer $token'};
-    return await http.get(
-      Uri.parse(url),
-      headers: headers,
-    );
+
+    try {
+      return await _dio.get(
+        url,
+        options: Options(headers: headers),
+      );
+    } catch (e) {
+      throw Exception('Failed to perform GET request: $e');
+    }
   }
 
-  static Future<http.Response> putRequest(String url, Map<String, dynamic> body,
+  static Future<Response> putRequest(String url, Map<String, dynamic> body,
       [String? token]) async {
     final headers = {'Content-Type': 'application/json'};
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
     }
 
-    return await http.put(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    try {
+      return await _dio.put(
+        url,
+        options: Options(headers: headers),
+        data: jsonEncode(body),
+      );
+    } catch (e) {
+      throw Exception('Failed to perform PUT request: $e');
+    }
   }
 
-  static Future<http.Response> deleteRequest(String url,
-      [String? token]) async {
+  static Future<Response> deleteRequest(String url, [String? token]) async {
     final headers = {'Content-Type': 'application/json'};
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
     }
 
-    return await http.delete(
-      Uri.parse(url),
-      headers: headers,
-    );
+    try {
+      return await _dio.delete(
+        url,
+        options: Options(headers: headers),
+      );
+    } catch (e) {
+      throw Exception('Failed to perform DELETE request: $e');
+    }
   }
 
-  static dynamic handleResponse(http.Response response) {
+  static dynamic handleResponse(Response response) {
     if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
+      final responseData = response.data;
       return responseData;
     } else {
       return null;

@@ -6,7 +6,7 @@ class TaskRepository {
 
   Future<List<Task>> getAllTasks({int limit = 0, int skip = 0}) async {
     final response =
-        await ApiHelper.getRequest('$baseUrl?limit=$limit&skip=$skip');
+    await ApiHelper.getRequest('$baseUrl?limit=$limit&skip=$skip');
     final responseData = ApiHelper.handleResponse(response);
     if (responseData != null) {
       final todos = responseData['todos'] as List<dynamic>;

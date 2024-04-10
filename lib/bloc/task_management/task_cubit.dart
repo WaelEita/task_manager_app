@@ -35,7 +35,7 @@ class TaskCubit extends BaseCubit<TaskState> {
     });
   }
 
-  void updateTaskStatus(int id, bool completed) async {
+  void updateTask(int id, bool completed) async {
     handleApiCall(() async {
       final task = await _taskRepository.updateTask(id, completed);
       emit(TaskUpdated(task));
