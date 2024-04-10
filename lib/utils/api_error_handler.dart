@@ -1,55 +1,55 @@
 import 'package:dio/dio.dart';
-import '../data/repositories/authentication_repository.dart';
 
-class ApiErrorHandler {
-  static dynamic handleHttpError(int? statusCode) {
-    if (statusCode != null) {
-      switch (statusCode) {
-        case 400:
-          return 'Bad request';
-        case 401:
-          _refreshSession();
-          return 'Unauthorized';
-        case 403:
-          return 'Forbidden';
-        case 404:
-          return 'Not found';
-        case 408:
-          return 'Request timeout';
-        case 500:
-          return 'Internal server error';
-        case 502:
-          return 'Bad gateway';
-        case 503:
-          return 'Service unavailable';
-        case 504:
-          return 'Gateway timeout';
-        default:
-          return 'Unexpected error';
-      }
-    } else {
-      return 'Unexpected error';
+abstract class Failures {
+  final String errorMassage;
+
+  Failures({required this.errorMassage});
+}
+
+class ServerFailures extends Failures {
+  ServerFailures({required super.errorMassage});
+
+  factory ServerFailures.ServerFailures(DioException dioException) {
+    switch (dioException.type) {
+      case DioExceptionType.connectionTimeout:
+        return ServerFailures(errorMassage: 'Connection timeout with api');
+
+      case DioExceptionType.sendTimeout:
+        return ServerFailures(errorMassage: 'Send timeout with api');
+
+      case DioExceptionType.receiveTimeout:
+        return ServerFailures(errorMassage: 'Receive timeout with api');
+
+      case DioExceptionType.badCertificate:
+        return ServerFailures.fromResponse(
+            response: dioException.response!.data,
+            statusCode: dioException.response!.statusCode!);
+      case DioExceptionType.badResponse:
+        return ServerFailures(errorMassage: 'Error pls try again');
+
+      case DioExceptionType.cancel:
+        return ServerFailures(errorMassage: 'The requise canceld');
+
+      case DioExceptionType.connectionError:
+        return ServerFailures(errorMassage: 'Bad connection');
+
+      case DioExceptionType.unknown:
+        return ServerFailures(errorMassage: 'There is no internet');
     }
   }
 
-  static void handleDioError(DioError e) {
-    if (e.response != null) {
-      final response = e.response!;
-      final statusCode = response.statusCode;
-      final errorMessage = handleHttpError(statusCode);
-      print('HTTP Error: $statusCode - $errorMessage');
+  factory ServerFailures.fromResponse(
+      {required dynamic response, required int statusCode}) {
+    if (statusCode == 400 || statusCode == 401 || statusCode == 403) {
+      return ServerFailures(errorMassage: response['error']['massage']);
+    } else if (statusCode == 404) {
+      return ServerFailures(errorMassage: "There is an error 404");
+    } else if (statusCode == 500) {
+      return ServerFailures(
+          errorMassage: "Internal server error, Please try again later");
     } else {
-      // Handle other Dio errors (e.g., DioErrorType.connectTimeout)
-      print('Dio Error: ${e.message}');
-    }
-  }
-
-  static void _refreshSession() async {
-    try {
-      await AuthRepository().refreshSession();
-      print('Session refreshed successfully. Retry the failed request.');
-    } catch (e) {
-      print('Error refreshing session: $e');
+      return ServerFailures(
+          errorMassage: "There is an error please try again later");
     }
   }
 }
