@@ -13,13 +13,13 @@ class AuthRepository {
     return _handleResponse(response);
   }
 
-  Future<User?> getCurrentUser(String token) async {
-    final response = await ApiHelper.getRequest('$baseUrl/me', token);
+  Future<User?> getCurrentUser() async {
+    final response = await ApiHelper.getRequest('$baseUrl/me');
     return _handleResponse(response);
   }
 
-  Future<User?> refreshSession(String token) async {
-    final response = await ApiHelper.postRequest('$baseUrl/refresh', {}, token);
+  Future<User?> refreshSession() async {
+    final response = await ApiHelper.postRequest('$baseUrl/refresh', {});
     return _handleResponse(response);
   }
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'token_manager.dart';
 
 class ApiHelper {
   static Future<http.Response> postRequest(
@@ -17,7 +18,8 @@ class ApiHelper {
     );
   }
 
-  static Future<http.Response> getRequest(String url, String token) async {
+  static Future<http.Response> getRequest(String url) async {
+    final token = await TokenManager.getToken();
     final headers = {'Authorization': 'Bearer $token'};
     return await http.get(
       Uri.parse(url),

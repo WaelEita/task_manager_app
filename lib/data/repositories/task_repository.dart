@@ -4,8 +4,9 @@ import '../models/task.dart';
 class TaskRepository {
   static const String baseUrl = 'https://dummyjson.com/todos';
 
-  Future<List<Task>> getAllTasks() async {
-    final response = await ApiHelper.getRequest(baseUrl, 'your_token_here');
+  Future<List<Task>> getAllTasks({int limit = 0, int skip = 0}) async {
+    final response =
+        await ApiHelper.getRequest('$baseUrl?limit=$limit&skip=$skip');
     final responseData = ApiHelper.handleResponse(response);
     if (responseData != null) {
       final todos = responseData['todos'] as List<dynamic>;
@@ -16,8 +17,7 @@ class TaskRepository {
   }
 
   Future<Task> getTaskById(int id) async {
-    final response =
-        await ApiHelper.getRequest('$baseUrl/$id', 'your_token_here');
+    final response = await ApiHelper.getRequest('$baseUrl/$id');
     final responseData = ApiHelper.handleResponse(response);
     if (responseData != null) {
       return Task.fromJson(responseData);
@@ -27,8 +27,7 @@ class TaskRepository {
   }
 
   Future<List<Task>> getTasksByUserId(int userId) async {
-    final response =
-        await ApiHelper.getRequest('$baseUrl/user/$userId', 'your_token_here');
+    final response = await ApiHelper.getRequest('$baseUrl/user/$userId');
     final responseData = ApiHelper.handleResponse(response);
     if (responseData != null) {
       final todos = responseData['todos'] as List<dynamic>;
@@ -39,14 +38,11 @@ class TaskRepository {
   }
 
   Future<Task> addTask(String todo, bool completed, int userId) async {
-    final response = await ApiHelper.postRequest(
-        '$baseUrl/add',
-        {
-          'todo': todo,
-          'completed': completed,
-          'userId': userId,
-        },
-        'your_token_here');
+    final response = await ApiHelper.postRequest('$baseUrl/add', {
+      'todo': todo,
+      'completed': completed,
+      'userId': userId,
+    });
     final responseData = ApiHelper.handleResponse(response);
     if (responseData != null) {
       return Task.fromJson(responseData);
@@ -55,13 +51,10 @@ class TaskRepository {
     }
   }
 
-  Future<Task> updateTaskStatus(int id, bool completed) async {
-    final response = await ApiHelper.putRequest(
-        '$baseUrl/$id',
-        {
-          'completed': completed,
-        },
-        'your_token_here');
+  Future<Task> updateTask(int id, bool completed) async {
+    final response = await ApiHelper.putRequest('$baseUrl/$id', {
+      'completed': completed,
+    });
     final responseData = ApiHelper.handleResponse(response);
     if (responseData != null) {
       return Task.fromJson(responseData);
@@ -71,8 +64,7 @@ class TaskRepository {
   }
 
   Future<Task> deleteTask(int id) async {
-    final response =
-        await ApiHelper.deleteRequest('$baseUrl/$id', 'your_token_here');
+    final response = await ApiHelper.deleteRequest('$baseUrl/$id');
     final responseData = ApiHelper.handleResponse(response);
     if (responseData != null) {
       return Task.fromJson(responseData);

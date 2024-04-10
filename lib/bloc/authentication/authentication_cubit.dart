@@ -1,5 +1,6 @@
 import '../../data/repositories/authentication_repository.dart';
 import '../../utils/base_cubit.dart';
+import '../../utils/token_manager.dart';
 import 'authentication_state.dart';
 
 class AuthCubit extends BaseCubit<AuthState> {
@@ -18,25 +19,35 @@ class AuthCubit extends BaseCubit<AuthState> {
     });
   }
 
-  Future<void> refreshSession(String token) async {
-    handleApiCall(() async {
-      final user = await _authRepository.refreshSession(token);
-      if (user != null) {
-        emit(Authenticated(user));
-      } else {
-        emitError("Session Refresh Failed");
-      }
-    });
+  Future<void> refreshSession() async {
+    final token = await TokenManager.getToken();
+    if (token != null) {
+      handleApiCall(() async {
+        final user = await _authRepository.refreshSession();
+        if (user != null) {
+          emit(Authenticated(user));
+        } else {
+          emitError("Session Refresh Failed");
+        }
+      });
+    } else {
+      emitError("No token available");
+    }
   }
 
-  Future<void> getCurrentUser(String token) async {
-    handleApiCall(() async {
-      final user = await _authRepository.getCurrentUser(token);
-      if (user != null) {
-        emit(Authenticated(user));
-      } else {
-        emitError("User Not Found");
-      }
-    });
+  Future<void> getCurrentUser() async {
+    final token = await TokenManager.getToken();
+    if (token != null) {
+      handleApiCall(() async {
+        final user = await _authRepository.getCurrentUser();
+        if (user != null) {
+          emit(Authenticated(user));
+        } else {
+          emitError("User Not Found");
+        }
+      });
+    } else {
+      emitError("No token available");
+    }
   }
 }
