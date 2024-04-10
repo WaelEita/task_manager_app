@@ -25,6 +25,33 @@ class ApiHelper {
     );
   }
 
+  static Future<http.Response> putRequest(String url, Map<String, dynamic> body,
+      [String? token]) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    return await http.put(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
+  static Future<http.Response> deleteRequest(String url,
+      [String? token]) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    return await http.delete(
+      Uri.parse(url),
+      headers: headers,
+    );
+  }
+
   static dynamic handleResponse(http.Response response) {
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
