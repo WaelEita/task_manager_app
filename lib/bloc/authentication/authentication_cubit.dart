@@ -1,51 +1,42 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/repositories/authentication_repository.dart';
+import '../../utils/base_cubit.dart';
 import 'authentication_state.dart';
 
-class AuthCubit extends Cubit<AuthState> {
+class AuthCubit extends BaseCubit<AuthState> {
   final AuthRepository _authRepository;
 
   AuthCubit(this._authRepository) : super(AuthInitial());
 
   Future<void> login(String username, String password) async {
-    emit(AuthLoading());
-    try {
+    handleApiCall(() async {
       final user = await _authRepository.loginUser(username, password);
       if (user != null) {
-        emit(AuthAuthenticated(user));
+        emit(Authenticated(user));
       } else {
-        emit(AuthError("Login Failed"));
+        emitError("Login Failed");
       }
-    } catch (e) {
-      emit(AuthError("Error: $e"));
-    }
+    });
   }
 
   Future<void> refreshSession(String token) async {
-    emit(AuthLoading());
-    try {
+    handleApiCall(() async {
       final user = await _authRepository.refreshSession(token);
       if (user != null) {
-        emit(AuthAuthenticated(user));
+        emit(Authenticated(user));
       } else {
-        emit(AuthError("Session Refresh Failed"));
+        emitError("Session Refresh Failed");
       }
-    } catch (e) {
-      emit(AuthError("Error: $e"));
-    }
+    });
   }
 
   Future<void> getCurrentUser(String token) async {
-    emit(AuthLoading());
-    try {
+    handleApiCall(() async {
       final user = await _authRepository.getCurrentUser(token);
       if (user != null) {
-        emit(AuthAuthenticated(user));
+        emit(Authenticated(user));
       } else {
-        emit(AuthError("User Not Found"));
+        emitError("User Not Found");
       }
-    } catch (e) {
-      emit(AuthError("Error: $e"));
-    }
+    });
   }
 }

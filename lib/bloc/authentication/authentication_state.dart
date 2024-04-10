@@ -6,10 +6,10 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
-class AuthAuthenticated extends AuthState {
+class Authenticated extends AuthState {
   final User user;
 
-  AuthAuthenticated(this.user);
+  Authenticated(this.user);
 }
 
 class AuthError extends AuthState {
