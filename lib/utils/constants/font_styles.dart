@@ -11,4 +11,14 @@ class Styles {
     fontFamily: 'Inter',
     fontWeight: FontWeight.w400,
   );
+  static const TextStyle boldTextStyle18 = TextStyle(
+    fontSize: 18,
+    fontFamily: 'Inter',
+    fontWeight: FontWeight.w700,
+  );
+  static const TextStyle textStyle14 = TextStyle(
+    fontSize: 14,
+    fontFamily: 'Inter',
+    fontWeight: FontWeight.w400,
+  );
 }

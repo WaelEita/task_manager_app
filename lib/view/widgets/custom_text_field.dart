@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../utils/colors.dart';
-import 'package:task_manager/utils/font_styles.dart';
+import '../../utils/constants/colors.dart';
+import 'package:task_manager/utils/constants/font_styles.dart';
 
 class CustomTextField extends StatefulWidget {
   final IconData prefixIcon;
