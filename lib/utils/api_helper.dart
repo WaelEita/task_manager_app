@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'api_error_handler.dart';
 import 'token_manager.dart';
 
 class ApiHelper {
   static final Dio _dio = Dio();
 
-  static Future<Response> postRequest(
-      String url, Map<String, dynamic> body,
+  static Future<Response> postRequest(String url, Map<String, dynamic> body,
       [String? token]) async {
     final headers = {'Content-Type': 'application/json'};
     if (token != null) {
@@ -20,7 +20,7 @@ class ApiHelper {
         data: jsonEncode(body),
       );
     } catch (e) {
-      throw Exception('Failed to perform POST request: $e');
+      throw ServerFailures(errorMessage: 'Failed to perform POST request: $e');
     }
   }
 
@@ -34,7 +34,7 @@ class ApiHelper {
         options: Options(headers: headers),
       );
     } catch (e) {
-      throw Exception('Failed to perform GET request: $e');
+      throw ServerFailures(errorMessage: 'Failed to perform GET request: $e');
     }
   }
 
@@ -52,7 +52,7 @@ class ApiHelper {
         data: jsonEncode(body),
       );
     } catch (e) {
-      throw Exception('Failed to perform PUT request: $e');
+      throw ServerFailures(errorMessage: 'Failed to perform PUT request: $e');
     }
   }
 
@@ -68,7 +68,8 @@ class ApiHelper {
         options: Options(headers: headers),
       );
     } catch (e) {
-      throw Exception('Failed to perform DELETE request: $e');
+      throw ServerFailures(
+          errorMessage: 'Failed to perform DELETE request: $e');
     }
   }
 
