@@ -17,12 +17,12 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id: json['id'],
-      todo: json['todo'],
-      completed: json['completed'],
-      userId: json['userId'],
-      limit: json['limit'],
-      skip: json['skip'],
+      id: json['id'] ?? 1,
+      todo: json['todo'] ?? "",
+      completed: json['completed'] ?? false,
+      userId: json['userId'] ?? 5,
+      limit: json['limit'] ?? 3,
+      skip: json['skip'] ?? 0,
     );
   }
 }
