@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// BaseCubit
 abstract class BaseCubit<State> extends Cubit<State> {
   BaseCubit(State initialState) : super(initialState);
 
@@ -20,19 +21,8 @@ abstract class BaseCubit<State> extends Cubit<State> {
     emit(_errorState(errorMessage));
   }
 
-  State _loadingState() {
-    return Loading() as State;
-  }
-
+  State _loadingState(); // Declaration without implementation
   State _errorState(String errorMessage) {
-    return Error(errorMessage) as State;
+    return Error() as State;
   }
-}
-
-class Loading {}
-
-class Error {
-  final String errorMessage;
-
-  Error(this.errorMessage);
 }

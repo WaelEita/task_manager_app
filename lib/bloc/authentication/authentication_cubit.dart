@@ -1,53 +1,70 @@
+import 'package:flutter/cupertino.dart';
 import '../../data/repositories/authentication_repository.dart';
-import '../../utils/base_cubit.dart';
+import '../../utils/snack_bar_message.dart';
 import '../../utils/token_manager.dart';
 import 'authentication_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AuthCubit extends BaseCubit<AuthState> {
-  final AuthRepository _authRepository;
+class AuthCubit extends Cubit<AuthState> {
+  final AuthRepository _authRepository = AuthRepository();
 
-  AuthCubit(this._authRepository) : super(AuthInitial());
+  AuthCubit() : super(AuthInitial());
 
-  Future<void> login(String username, String password) async {
-    handleApiCall(() async {
+  void _emitLoading() {
+    emit(AuthLoading());
+  }
+
+  void _emitError(String errorMessage) {
+    emit(AuthError(errorMessage));
+  }
+
+  Future<void> login(
+      BuildContext context, String username, String password) async {
+    _emitLoading();
+    try {
       final user = await _authRepository.loginUser(username, password);
       if (user != null) {
         emit(Authenticated(user));
       } else {
-        emitError("Login Failed");
+        _emitError("Login Failed");
+        showSnackBar(context, 'Invalid username or password');
       }
-    });
+    } catch (error) {
+      showSnackBar(context, 'Please try again later');
+    }
   }
 
   Future<void> refreshSession() async {
     final token = await TokenManager.getToken();
     if (token != null) {
-      handleApiCall(() async {
+      _emitLoading();
+      try {
         final user = await _authRepository.refreshSession();
         if (user != null) {
           emit(Authenticated(user));
         } else {
-          emitError("Session Refresh Failed");
+          _emitError("Session Refresh Failed");
         }
-      });
-    } else {
-      emitError("No token available");
+      } catch (e) {
+        _emitError("Error: $e");
+      }
     }
   }
 
   Future<void> getCurrentUser() async {
     final token = await TokenManager.getToken();
     if (token != null) {
-      handleApiCall(() async {
+      _emitLoading();
+      try {
         final user = await _authRepository.getCurrentUser();
         if (user != null) {
           emit(Authenticated(user));
         } else {
-          emitError("User Not Found");
+          _emitError("User Not Found");
         }
-      });
-    } else {
-      emitError("No token available");
+      } catch (e) {
+        _emitError("Error: $e");
+      }
     }
   }
 }
