@@ -3,16 +3,14 @@ class Task {
   final String todo;
   final bool completed;
   final int userId;
-  final int limit;
-  final int skip;
+  final bool isDeleted;
 
   Task({
     required this.id,
     required this.todo,
     required this.completed,
     required this.userId,
-    required this.limit,
-    required this.skip,
+    required this.isDeleted,
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
@@ -21,8 +19,7 @@ class Task {
       todo: json['todo'] ?? "",
       completed: json['completed'] ?? false,
       userId: json['userId'] ?? 5,
-      limit: json['limit'] ?? 3,
-      skip: json['skip'] ?? 0,
+      isDeleted: json['isDeleted'] ?? false,
     );
   }
 }

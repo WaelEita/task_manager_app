@@ -4,7 +4,10 @@ import 'package:task_manager/view/widgets/custom_button.dart';
 import '../../utils/constants/colors.dart';
 
 class ButtonChoiceRow extends StatefulWidget {
-  const ButtonChoiceRow({Key? key}) : super(key: key);
+  final void Function(int) onIndexChanged;
+
+  const ButtonChoiceRow({Key? key, required this.onIndexChanged})
+      : super(key: key);
 
   @override
   _ButtonChoiceRowState createState() => _ButtonChoiceRowState();
@@ -24,12 +27,13 @@ class _ButtonChoiceRowState extends State<ButtonChoiceRow> {
             setState(() {
               _selectedIndex = 0;
             });
+            widget.onIndexChanged(_selectedIndex);
           },
           width: MediaQuery.of(context).size.width * .4,
           height: 55,
-          textStyle: Styles.textStyle14.copyWith(
-              color: _selectedIndex == 0 ? black : white),
-          containerColor: _selectedIndex == 0 ? kSecondary : Color(0xFF263238),
+          textStyle: Styles.textStyle14
+              .copyWith(color: _selectedIndex == 0 ? black : white),
+          containerColor: _selectedIndex == 0 ? kSecondary : const Color(0xFF263238),
         ),
         CustomButton(
           text: 'Groups',
@@ -37,12 +41,13 @@ class _ButtonChoiceRowState extends State<ButtonChoiceRow> {
             setState(() {
               _selectedIndex = 1;
             });
+            widget.onIndexChanged(_selectedIndex);
           },
           width: MediaQuery.of(context).size.width * .4,
           height: 55,
-          textStyle: Styles.textStyle14.copyWith(
-              color: _selectedIndex == 1 ? black : white),
-          containerColor: _selectedIndex == 1 ?kSecondary : Color(0xFF263238),
+          textStyle: Styles.textStyle14
+              .copyWith(color: _selectedIndex == 1 ? black : white),
+          containerColor: _selectedIndex == 1 ? kSecondary : const Color(0xFF263238),
         ),
       ],
     );

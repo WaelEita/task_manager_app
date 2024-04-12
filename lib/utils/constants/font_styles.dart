@@ -6,6 +6,11 @@ class Styles {
     fontFamily: 'Inter',
     fontWeight: FontWeight.w700,
   );
+  static const TextStyle textStyle20 = TextStyle(
+    fontSize: 20,
+    fontFamily: 'Inter',
+    fontWeight: FontWeight.w400,
+  );
   static const TextStyle textStyle18 = TextStyle(
     fontSize: 18,
     fontFamily: 'Inter',

@@ -2,37 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../utils/constants/assets.dart';
 import '../../utils/constants/colors.dart';
+import '../../bloc/task_management/task_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CompleteCheckBox extends StatefulWidget {
+class CompleteCheckBox extends StatelessWidget {
   final bool isSelected;
-  final Function(bool) onChanged;
+  final int taskId;
 
   const CompleteCheckBox({
-    super.key,
+    Key? key,
     required this.isSelected,
-    required this.onChanged,
-  });
+    required this.taskId,
+  }) : super(key: key);
 
-  @override
-  _CompleteCheckBoxState createState() => _CompleteCheckBoxState();
-}
-
-class _CompleteCheckBoxState extends State<CompleteCheckBox> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        widget.onChanged(!widget.isSelected);
+        context.read<TaskCubit>().updateTask(taskId, !isSelected);
       },
       child: Container(
         color: kSecondary,
         height: 60,
         width: 40,
         child: Center(
-          child: widget.isSelected
+          child: isSelected
               ? SvgPicture.asset(
-                  AssetsData.checkCircle,
-                )
+            AssetsData.checkCircle,
+          )
               : const Icon(Icons.circle_outlined, color: black),
         ),
       ),
