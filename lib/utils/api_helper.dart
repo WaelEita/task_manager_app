@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'api_error_handler.dart';
-import 'token_manager.dart';
+import '../data/data_manager.dart';
 
 class ApiHelper {
   static final Dio _dio = Dio();
@@ -25,7 +25,7 @@ class ApiHelper {
   }
 
   static Future<Response> getRequest(String url) async {
-    final token = await TokenManager.getToken();
+    final token = await DataManager.getToken();
     final headers = {'Authorization': 'Bearer $token'};
 
     try {

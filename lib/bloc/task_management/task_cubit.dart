@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../data/data_manager.dart';
 import '../../data/models/task.dart';
 import '../../data/repositories/task_repository.dart';
 import 'task_state.dart';
@@ -23,12 +24,11 @@ class TaskCubit extends Cubit<TaskState> {
   void getAllTasks() async {
     _emitLoading();
     try {
-      final tasks = await _taskRepository.getAllTasks();
-      if (tasks != null) {
-        _emitTasksLoaded(tasks);
-      } else {
-        _emitError('Failed to load tasks');
-      }
+      final tasks = await DataManager.getTasks();
+      _emitTasksLoaded(tasks);
+      final updatedTasks = await _taskRepository.getAllTasks();
+      _emitTasksLoaded(updatedTasks);
+      await DataManager.saveTasks(updatedTasks);
     } catch (error) {
       _emitError('Failed to load tasks');
     }
@@ -51,14 +51,31 @@ class TaskCubit extends Cubit<TaskState> {
   void getTasksByUserId(int userId) async {
     _emitLoading();
     try {
-      final tasks = await _taskRepository.getTasksByUserId(userId);
-      if (tasks != null) {
-        _emitTasksLoaded(tasks);
+      final tasks = await DataManager.getTasks();
+      if (tasks.isNotEmpty) {
+        final userTasks = tasks.where((task) => task.userId == userId).toList();
+        if (userTasks.isNotEmpty) {
+          _emitTasksLoaded(userTasks);
+        } else {
+          final tasksByUserId = await _taskRepository.getTasksByUserId(userId);
+          if (tasksByUserId != null) {
+            _emitTasksLoaded(tasksByUserId);
+            await DataManager.saveTasks(tasksByUserId);
+          } else {
+            _emitError('Failed to load tasks for user');
+          }
+        }
       } else {
-        _emitError('Failed to load tasks');
+        final tasksByUserId = await _taskRepository.getTasksByUserId(userId);
+        if (tasksByUserId != null) {
+          _emitTasksLoaded(tasksByUserId);
+          await DataManager.saveTasks(tasksByUserId);
+        } else {
+          _emitError('Failed to load tasks for user');
+        }
       }
     } catch (error) {
-      _emitError('Failed to load tasks');
+      _emitError('Failed to load tasks for user');
     }
   }
 
@@ -68,6 +85,8 @@ class TaskCubit extends Cubit<TaskState> {
       final task = await _taskRepository.addTask(todo, completed, userId);
       if (task != null) {
         emit(TaskAdded(task));
+        final updatedTasks = await _taskRepository.getAllTasks();
+        await DataManager.saveTasks(updatedTasks);
       } else {
         _emitError('Failed to add task');
       }
@@ -82,6 +101,8 @@ class TaskCubit extends Cubit<TaskState> {
       final task = await _taskRepository.updateTask(id, completed);
       if (task != null) {
         emit(TaskUpdated(task));
+        final updatedTasks = await _taskRepository.getAllTasks();
+        await DataManager.saveTasks(updatedTasks);
       } else {
         _emitError('Failed to update task status');
       }
@@ -96,6 +117,8 @@ class TaskCubit extends Cubit<TaskState> {
       final task = await _taskRepository.deleteTask(id);
       if (task != null) {
         emit(TaskDeleted(task));
+        final updatedTasks = await _taskRepository.getAllTasks();
+        await DataManager.saveTasks(updatedTasks);
       } else {
         _emitError('Failed to delete task');
       }

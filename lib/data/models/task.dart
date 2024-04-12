@@ -13,13 +13,24 @@ class Task {
     required this.isDeleted,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'todo': todo,
+      'completed': completed,
+      'userId': userId,
+      'isDeleted': isDeleted,
+    };
+  }
+
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id: json['id'] ?? 1,
-      todo: json['todo'] ?? "",
+      id: json['id'],
+      todo: json['todo'] ?? '',
       completed: json['completed'] ?? false,
-      userId: json['userId'] ?? 5,
+      userId: json['userId'] ?? 0,
       isDeleted: json['isDeleted'] ?? false,
     );
   }
+
 }

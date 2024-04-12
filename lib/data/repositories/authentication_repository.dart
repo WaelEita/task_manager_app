@@ -1,6 +1,6 @@
 import '../../utils/api_error_handler.dart';
 import '../../utils/api_helper.dart';
-import '../../utils/token_manager.dart';
+import '../data_manager.dart';
 import '../models/user.dart';
 
 class AuthRepository {
@@ -14,7 +14,7 @@ class AuthRepository {
       });
       final responseData = ApiHelper.handleResponse(response);
       if (responseData != null) {
-        await TokenManager.saveToken(responseData['token']);
+        await DataManager.saveToken(responseData['token']);
         return User.fromJson(responseData);
       } else {
         return null;

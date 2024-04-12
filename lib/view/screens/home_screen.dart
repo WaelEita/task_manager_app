@@ -3,17 +3,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_manager/utils/constants/colors.dart';
 import 'package:task_manager/utils/constants/font_styles.dart';
 import '../../bloc/task_management/task_cubit.dart';
+import '../../bloc/task_management/task_state.dart';
 import '../widgets/button_choice_row.dart';
 import '../widgets/task_cards_list.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TaskCubit(),
+      child: _HomeScreenContent(),
+    );
+  }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenContent extends StatefulWidget {
+  const _HomeScreenContent({Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenContentState createState() => _HomeScreenContentState();
+}
+
+class _HomeScreenContentState extends State<_HomeScreenContent> {
   int _selectedIndex = 0;
 
   @override
@@ -61,9 +74,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
                 const SizedBox(height: 30),
-                TaskCardsList(
-                  userId: _selectedIndex == 0 ? 5 : null,
-                  refreshTasks: _loadTasks,
+                BlocBuilder<TaskCubit, TaskState>(
+                  builder: (context, state) {
+                    if (state is TaskLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is TaskLoaded) {
+                      return TaskCardsList(
+                        userId: _selectedIndex == 0 ? 5 : null,
+                        refreshTasks: _loadTasks,
+                      );
+                    } else if (state is TaskError) {
+                      return Center(
+                        child: Text(state.message),
+                      );
+                    } else {
+                      return const Center(
+                        child: Text('Something went wrong!'),
+                      );
+                    }
+                  },
                 ),
               ],
             ),

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import '../../data/repositories/authentication_repository.dart';
 import '../../utils/snack_bar_message.dart';
-import '../../utils/token_manager.dart';
+import '../../data/data_manager.dart';
 import 'authentication_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -35,7 +35,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> refreshSession() async {
-    final token = await TokenManager.getToken();
+    final token = await DataManager.getToken();
     if (token != null) {
       _emitLoading();
       try {
@@ -52,7 +52,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> getCurrentUser() async {
-    final token = await TokenManager.getToken();
+    final token = await DataManager.getToken();
     if (token != null) {
       _emitLoading();
       try {
